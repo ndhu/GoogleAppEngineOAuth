@@ -3,21 +3,21 @@
 # Exploring OAuth2 on GAE
 Explores a _Login with Facebook_ & _Login with Google_ approach for apps that run on Google App Engine or a plain old servlet environment.
 
-GAE offers a UserService, that does leverage Authentication via Google Accounts but not other Providers. This example here uses the open OAuth2 protocol, that is supported by the likes of Facebook, Google, GitHub - no Twitter yet -
+GAE offers a UserService, that does leverage authentication via Google Accounts but not other providers. This example here uses the open OAuth2 protocol, that is supported by the likes of Facebook, Google, GitHub - no Twitter yet -
 and provides a way to authenticate users via their Facebook-, Google- etc. account.
 
-Read [the OAuth Specification](http://oauth.net/) for deeper insights.
+Read [the OAuth specification](http://oauth.net/) for deeper insights.
 
 ## Flow
 
 The flow of an oauth2 authentication goes like this:
 
-+ User clicks the _Login with [PROVIDER]_ Button on your App
-+ The App makes an Authorization Request (server side) to the OAuth Provider (e.g. Facebook), passing the client id of your App, a Scope and a redirect url.
-    + The client id must be registered at the OAuth Provider and is only known to your App and the provider.
-    + The Scope indicates what data (services) your App would like to get access to. For the login flow, basic user info is sufficient.
++ User clicks the _Login with [PROVIDER]_ button on your app
++ The app makes an authorization request (server side) to the OAuth provider (e.g. Facebook), passing the client id of your app, a scope and a redirect url.
+    + The client id must be registered at the OAuth provider and is only known to your app and the provider.
+    + The scope indicates what data (services) your app would like to get access to. For the login flow, basic user info is sufficient.
     + The redirect url is where the provider will send an authorization code if the user granted access or an error code if access was denied.
-+ If the user is not yet logged in at the OAuth Provider (e.g. Facebook), the provider handles the login
++ If the user is not yet logged in at the OAuth provider (e.g. Facebook), the provider handles the login
 + On behalves of your app, the provider (e.g. Facebook) asks the user to grant required permissions to access user specific data.
 + If granted, the provider sends an authorization code to the redirect url provided by the app
 + The app handles the request and extracts the authorization code.
@@ -32,17 +32,17 @@ See the [Protocol Flow as specified in RFC 6749](http://tools.ietf.org/html/rfc6
 
 ## Configuration
 
-This demo uses an external config file to configure the access to th OAuth Providers.
+This demo uses an config file to configure the access to th OAuth providers.
 The _OAuthProviderService_ (which is also a ServletContextListener) loads the configuration at startup
-and creates a List of OAuthProviders, that are then used in the _OAuthServlet_ to help orchestrate the Handshake.
+and creates a list of OAuthProviders, that are then used in the _OAuthServlet_ to help orchestrate the handshake.
 
-This solution also uses an external file to store client id and client secrets.
-At the moment there is no convenient way to store sensitive configuration data in GAE.
+This solution also uses an file to store client id and client secrets.
+Currently there is no convenient way to store sensitive configuration data in GAE.
 I decided to store the values in a config-file (_api-keys-secrets.config_), which of course should not be added to code version control. Still, note,  that anyone with
 access to your GAE-App can read this information.
 An alternative on GAE might be to use the remote api and store the secrets right in the datastore.
 
-In order to use an OAuth Provider you need to register, configure and obtain a couple of items
+In order to use an OAuth provider you need to register, configure and obtain a couple of items
 
 ### Client ID and Client Secret
 
@@ -64,7 +64,7 @@ Similar: [Create a Facebook app](https://developers.facebook.com/docs/facebook-l
 
 to obtain an id, secret and register the redirect urls.
 
-### Configuring the Handshake
+### Configuring the handshake
 
 #### Google
 
@@ -112,9 +112,9 @@ Similar
 
 ## Design
 
-This Demo leverages parts of Apache Amber but abstracts away the configuration of providers and handshakes
+This demo leverages parts of Apache Amber but abstracts away the configuration of providers and for the handshakes
 in configuration files. It uses plain old servlets and is not dependent on any MVC Framework (although the
-OAuthServlet could easily and conveniently be turned into e.g. a Sring MVC-Controller).
+OAuthServlet could easily and conveniently be turned into e.g. a Spring MVC-Controller).
 
 The OAuthServlet processes the invocation of the authorization request and handles the redirection callback from the provider.
 
@@ -137,5 +137,6 @@ a OAuthUser is created, that abstracts away any inconsistencies regarding the us
 After a successful handshake we have an OAuthUser with id, firstName, lastName and name to work with.
 We could then use this object to e.g. lookup or create and populate an AppUser Entity in the gae datastore.
 
+## Demo
 
-This file was modified by IntelliJ IDEA 12.1.4 for binding GitHub repository
+[Check the demo](http://faveplacr.appspot.com/)
