@@ -45,7 +45,7 @@ public class OAuthServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        //use the provider an the evaluated phase to handle the request
+        //poor mans dispatcher
         if (provider.getPhase().equals(OAuthProvider.OauthPhase.AUTHORIZATION)) {
             handleAuthorizationPhase(provider, req, resp);
         } else {

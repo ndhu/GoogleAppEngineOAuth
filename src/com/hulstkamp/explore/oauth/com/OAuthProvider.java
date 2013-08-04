@@ -11,7 +11,10 @@ import java.util.Properties;
  */
 public class OAuthProvider implements IOAuthProvider {
 
-
+    /**
+     * Enumeration of the property names used to lookup the values for the provider
+     * This is used to map the property values and types to an OAuthProvider
+     */
     private static enum PropertyKeyName {
 
         AUTHORIZE_URI("oauth.authorize.uri"),
@@ -49,7 +52,6 @@ public class OAuthProvider implements IOAuthProvider {
         Type getType() {
             return type;
         }
-
     }
 
     public static enum OauthPhase {
@@ -74,9 +76,19 @@ public class OAuthProvider implements IOAuthProvider {
     private OAuthUser.OauthOrigin origin;
     private OauthPhase phase;
 
+    /**
+     * Please use the factory method to create an instance
+     */
     private OAuthProvider() {
         super();
     }
+
+    /**
+     * Create an OAuthProvider of the given name using the properties to populate the provider
+     * @param providerName name of the provider
+     * @param properties properties to use to populate and configure the provider
+     * @return the created provider
+     */
     public static OAuthProvider create (String providerName, Properties properties) {
         OAuthProvider provider = new OAuthProvider();
         provider.name = providerName;
@@ -95,6 +107,13 @@ public class OAuthProvider implements IOAuthProvider {
         return provider;
     }
 
+    /**
+     * Helper to get a property value given the provider name, the property name and the properties
+     * @param providerName
+     * @param properties
+     * @param propertyName
+     * @return
+     */
     private static Object getProperty(String providerName, Properties properties, PropertyKeyName propertyName) {
         return getProperty(providerName, properties, propertyName, "");
     }
@@ -118,20 +137,6 @@ public class OAuthProvider implements IOAuthProvider {
         sb.append("?");
         sb.append(this.params);
         return sb.toString();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public String getAuthorizationUrl() {
-        return authorizationUrl;
-    }
-
-    @Override
-    public String getParams() {
-        return this.params;
     }
 
     @Override

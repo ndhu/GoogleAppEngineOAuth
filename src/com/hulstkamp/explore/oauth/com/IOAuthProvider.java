@@ -1,35 +1,69 @@
 package com.hulstkamp.explore.oauth.com;
 
 /**
- * Created with IntelliJ IDEA.
- * User: hulstkan
- * Date: 04.08.13
- * Time: 16:49
- * To change this template use File | Settings | File Templates.
+ * Describes an OAuthProvider.
  */
 public interface IOAuthProvider {
+
+    /**
+     * Returns the URI for the authentication request
+     * @return URI
+     */
     String getAuthorizationRequestUrl();
 
-    String getName();
-
-    String getParams();
-
+    /**
+     * Returns the URI for the redirect, where the provider will send the code | error after authorization
+     * @return
+     */
     String getRedirectUrl();
 
+    /**
+     * Returns the client id
+     * @return client id
+     */
     String getClientId();
 
-    String getOauthTokenLocation();
-
-    String createUserProfileUrl(String accessToken);
-
+    /**
+     * Returns the client secret
+     * @return  client secret
+     */
     String getClientSecret();
 
+    /**
+     * Returns the URI for fetching the access token
+     * @return URI for access token
+     */
+    String getOauthTokenLocation();
+
+    /**
+     * Returns the URI to get the user profile
+     * @param accessToken  to use for the request
+     * @return JSON holding user info
+     */
+    String createUserProfileUrl(String accessToken);
+
+    /**
+     * The Origin of the Provider
+     * @return
+     */
     OAuthUser.OauthOrigin getOrigin();
 
+    /**
+     * Returns the class to use to handle the access token response
+     * @return the Class
+     */
     Class getAccessTokenResponseClass();
 
+    /**
+     * The Request Type to get the access token
+     * @return access token request type GET | POST
+     */
     String getAccessTokenRequestType();
 
+    /**
+     * Returns the phase the OAuthProvider is in
+     * @return  the current phase
+     */
     OAuthProvider.OauthPhase getPhase();
 
     void setPhase(OAuthProvider.OauthPhase phase);

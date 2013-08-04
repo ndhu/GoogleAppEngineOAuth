@@ -25,16 +25,24 @@ import static com.google.appengine.api.utils.SystemProperty.environment;
  */
 public class OAuthProviderService implements ServletContextListener {
 
-    private static final String SERVER;
+    private enum UrlPatternRegexp {
+        INVOKE("(?i)^.*\\/oauth\\/(.*)/invoke\\/?"),
+        REDIRECT("(?i)^.*\\/oauth\\/(.*)/redirect\\/?"),
+        EVAL("^.*\\/oauth\\/(.*)\\/(invoke|redirect)\\/?");
 
-    private static final String INVOKE_URL_REGEXP =  "(?i)^.*\\/oauth\\/(.*)/invoke\\/?";
-    private static final String REDIRECT_URL_REGEXP =  "(?i)^.*\\/oauth\\/(.*)/redirect\\/?";
-    private static final String EVAL_PROVIDER_REGEXP = "^.*\\/oauth\\/(.*)\\/(invoke|redirect)\\/?";
+        private final String pattern;
+
+        UrlPatternRegexp(String pattern) {
+            this.pattern = pattern;
+        }
+    }
+
+    private static final String SERVER;
 
     static {
         SystemProperty.Environment.Value env = environment.value();
         if (env == Production) {
-            SERVER = "http://localhost:8080";
+            SERVER = "http://faveplacr.appspot.com";
         } else if (env == Development) {
             SERVER = "http://localhost:8080";
         } else {
@@ -42,18 +50,28 @@ public class OAuthProviderService implements ServletContextListener {
         }
     }
 
-    private static OAuthProviderService _instance;
-
-    private ServletContext context = null;
-
+    /**
+     * Map of all OAuthProvider
+     *
+     */
     private HashMap<String, OAuthProvider> oauthProviders;
 
-    //Singleton, refactor in a DI Environment
+    private static OAuthProviderService _instance;
+
+    /**
+     * Return instance of the OAuthProviderService Singleton
+     * @return OAuthProviderService
+     */
     public static OAuthProviderService getInstance() {
         return _instance;
     }
 
-    //Web Application context is ready, initialize context
+    /**
+     * Creates and initializes the OAuthProviders based o the values in the config file.
+     * This method is invoked by the container when the web application has been initialized.
+     * @param event
+     */
+    @Override
     public void contextInitialized(ServletContextEvent event) {
 
         //load, merge and inject all relevant properties
@@ -101,6 +119,11 @@ public class OAuthProviderService implements ServletContextListener {
         return merged;
     }
 
+    /**
+     * Create all OAuthProviders configured in the properties.
+     * @param providerNames  Names of the providers that are used as a prefix to the properties-keys
+     * @param properties all properties to configure the providers
+     */
     private void initOauthProviders(String[] providerNames, Properties properties) {
         HashMap<String, OAuthProvider> oauthProviders = new HashMap<String, OAuthProvider>(providerNames.length);
         for (String providerName : providerNames) {
@@ -110,18 +133,22 @@ public class OAuthProviderService implements ServletContextListener {
         this.oauthProviders = oauthProviders;
     }
 
-    //clean up when Web Application gets destroyed
+    /**
+     * Clean up when app is destroyed. This won't be called on GAE.
+     * @param event
+     */
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
-        this.context = null;
     }
 
-    private OAuthProvider getOauthProvider(String name) {
-        return this.oauthProviders.get(name);
-    }
-
+    /**
+     * Looks up the matching OAuthProvider based on the url pattern and configures the phase to invoke.
+     * @param uri  the url pattern to match the provider against
+     * @return the OAuthProvider to use to process the request url
+     */
     public OAuthProvider getOauthProviderFor(String uri) {
-        String invokeRegexp = "(?i)^.*\\/oauth\\/(facebook|google)/invoke\\/?";
-        String redirectRegexp = "(?i)^.*\\/oauth\\/(facebook|google)/redirect\\/?";
+        String invokeRegexp = UrlPatternRegexp.INVOKE.pattern; //"(?i)^.*\\/oauth\\/(facebook|google)/invoke\\/?";
+        String redirectRegexp = UrlPatternRegexp.REDIRECT.pattern; // "(?i)^.*\\/oauth\\/(facebook|google)/redirect\\/?";
         OAuthProvider oauthProvider = evalOauthProviderToUse(uri);
         if (oauthProvider != null) {
             if (uri.matches(invokeRegexp)) {
@@ -136,8 +163,13 @@ public class OAuthProviderService implements ServletContextListener {
         return null;
     }
 
+    /**
+     * Evaluate the OAuthProvider based on the url pattern
+     * @param uri OAuthProvider that can process the request given the url
+     * @return
+     */
     private OAuthProvider evalOauthProviderToUse(String uri) {
-        Pattern pattern = Pattern.compile(EVAL_PROVIDER_REGEXP, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(UrlPatternRegexp.EVAL.pattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(uri);
         matcher.find();
         int groupCount = matcher.groupCount();
@@ -146,5 +178,9 @@ public class OAuthProviderService implements ServletContextListener {
             oauthProviderMatch = matcher.group(1);
         }
         return OAuthProviderService.getInstance().getOauthProvider(oauthProviderMatch);
+    }
+
+    private OAuthProvider getOauthProvider(String name) {
+        return this.oauthProviders.get(name);
     }
 }
