@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="AppEngine API">
+    <CLASSES>
+      <root url="file://$GAE_HOME$/lib/user" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$GAE_HOME$/lib/user" />
+    </SOURCES>
+    <jarDirectory url="$GAE_HOME/lib/user" recursive="false" />
+    <jarDirectory url="file://$GAE_HOME$/lib/user" recursive="false" />
+    <jarDirectory url="file://$GAE_HOME$/lib/user" recursive="false" type="SOURCES" />
+  </library>
+</component>

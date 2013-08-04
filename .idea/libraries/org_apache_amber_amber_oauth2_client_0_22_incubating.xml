@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="org.apache.amber:amber-oauth2-client:0.22-incubating" type="repository">
+    <properties maven-id="org.apache.amber:amber-oauth2-client:0.22-incubating" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/amber-oauth2-client-0.22-incubating.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/amber-oauth2-common-0.22-incubating.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jettison-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/servlet-api-2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
